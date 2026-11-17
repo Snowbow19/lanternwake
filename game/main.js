@@ -31,7 +31,7 @@ function reset() {
   $('launch').innerHTML='LIGHT THE ENGINE <span>↗</span>';
   $('start-note').textContent='CLICK TO SET A COURSE · SPACE TO TAKE A TOW';
   $('weather').textContent='A storm is coming.';
-  toast('The harbor is waiting.',3);
+  $('toast').style.opacity='0';toastUntil=worldTime;
   updateHud();
 }
 
