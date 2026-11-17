@@ -1,5 +1,6 @@
 import { getLevel } from './levels.js';
 import {crewBrass,salvageBrass} from './economy.js';
+import {createEncounter,signalFlare,tickEncounter,signalsReady} from './encounters.js';
 
 export const WIDTH=1040, HEIGHT=480;
 export const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -10,6 +11,7 @@ export const chartOf=state=>state.chart||getLevel(state.levelIndex);
 export function createVoyage(levelIndex,ship,options={}) {
   const level=options.chart||getLevel(levelIndex);
   return {levelIndex,chart:level,watch:options.watch,ship:{...ship,upgrades:[...ship.upgrades]},mode:'playing',elapsed:0,hull:clamp(options.hull??ship.maxHull,1,ship.maxHull),
+    ...createEncounter(level),signalScore:0,rescueChain:0,lastRescue:-100,chainScore:0,refillTime:0,
     rescued:0,lost:0,brassEarned:0,urgencyBonus:0,maxStrain:0,score:0,boost:1,flares:ship.flareCapacity,flare:null,damageCooldown:0,
     tug:{...level.spawn,vx:0,vy:0,angle:level.harbor.x>520?Math.PI:0,target:null},
     boats:level.boats.map((b,i)=>{const distress=b.urgency??100+levelIndex*12+(i%3)*18;return{...b,ox:b.x,oy:b.y,vx:0,vy:0,angle:i*.4,state:'waiting',discovered:!level.fog,distress,initialDistress:distress,strain:0,tension:0};}),
@@ -35,14 +37,15 @@ export function attachTow(state) {
 
 export function launchFlare(state) {
   if(state.mode!=='playing')return;
-  if(state.flares<=0){event(state,'message',{text:'No flares left. A rescue will replenish one.'});return;}
+  if(state.flares<=0){event(state,'message',{text:'No flares left. Rescue a crew or wait at the harbor to resupply.'});return;}
   state.flares--;state.flare={x:state.tug.x,y:state.tug.y,until:state.elapsed+9,r:state.ship.visibility+160};
+  signalFlare(state,state.flare);
   for(const [i,h] of hazardsAt(state).entries())if(distance(h,state.tug)<220)state.hazards[i].calmedUntil=state.elapsed+8;
   for(const boat of state.boats)if(boat.state==='waiting'&&distance(boat,state.flare)<state.flare.r)boat.distress=Math.min(180,boat.distress+18);
   event(state,'flare',{x:state.tug.x,y:state.tug.y,text:'Signal burning. Crews have more time; nearby squalls are calm.'});
 }
 
-export function voyageScore(state,won=false){const level=chartOf(state);return state.rescued*300+state.salvaged*100+state.maxConvoy*100+(state.rescued?Math.ceil(state.hull)*3:0)+Math.round(state.urgencyBonus)+(won?Math.max(0,Math.ceil(level.seconds-state.elapsed))*2:0);}
+export function voyageScore(state,won=false){const level=chartOf(state);return state.rescued*300+state.salvaged*100+state.maxConvoy*100+(state.rescued?Math.ceil(state.hull)*3:0)+Math.round(state.urgencyBonus)+state.signalScore+state.chainScore+(won?Math.max(0,Math.ceil(level.seconds-state.elapsed))*2:0);}
 function settle(state,won) {
   const level=chartOf(state);
   state.mode=won?'won':'lost';state.tug.target=null;state.maxStrain=0;
@@ -62,6 +65,7 @@ export function tickVoyage(state,input,dt) {
   const level=chartOf(state),tug=state.tug;
   state.elapsed+=dt;state.damageCooldown=Math.max(0,state.damageCooldown-dt);
   if(state.flare&&state.flare.until<=state.elapsed)state.flare=null;
+  tickEncounter(state,dt);
   let mx=(input.right?1:0)-(input.left?1:0),my=(input.down?1:0)-(input.up?1:0),arrival=1;
   if(mx||my)tug.target=null;
   else if(tug.target){const d=distance(tug,tug.target);arrival=clamp(d/55,0,1);if(d>1){mx=(tug.target.x-tug.x)/d;my=(tug.target.y-tug.y)/d;}else arrival=0;}
@@ -85,6 +89,10 @@ export function tickVoyage(state,input,dt) {
   tug.vx+=(mx*speed+current.x-tug.vx)*blend;tug.vy+=(my*speed+current.y-tug.vy)*blend;
   tug.x=clamp(tug.x+tug.vx*dt,30,WIDTH-30);tug.y=clamp(tug.y+tug.vy*dt,78,HEIGHT-45);
   const velocity=Math.hypot(tug.vx,tug.vy);
+  if(distance(tug,level.harbor)<level.harbor.r+15&&velocity<28&&state.flares<state.ship.flareCapacity){
+    state.refillTime+=dt;
+    if(state.refillTime>=2.5){state.refillTime=0;state.flares++;event(state,'salvage',{x:tug.x,y:tug.y,text:'Harbor tender: one signal flare supplied.'});}
+  }else state.refillTime=0;
   if(velocity>5){const angle=Math.atan2(tug.vy,tug.vx),diff=(angle-tug.angle+Math.PI*3)%(Math.PI*2)-Math.PI;tug.angle+=diff*Math.min(1,dt*7);}
   for(const rock of level.reefs){
     const d=distance(rock,tug),limit=rock.r+14;
@@ -115,11 +123,13 @@ export function tickVoyage(state,input,dt) {
   const delivered=state.tow.filter(b=>distance(b,level.harbor)<level.harbor.r-10&&distance(tug,level.harbor)<level.harbor.r+15);
   for(const b of delivered){
     b.state='safe';state.rescued++;b.x=level.harbor.x-50+(state.rescued%3)*22;b.y=300+Math.floor((state.rescued-1)/3)*19;b.angle=-.18;
+    state.rescueChain=state.elapsed-state.lastRescue<8?state.rescueChain+1:1;state.lastRescue=state.elapsed;
+    const chain=50*Math.max(0,state.rescueChain-1);state.chainScore+=chain;
     state.urgencyBonus+=b.distress;state.brassEarned+=crewBrass(state.watch??state.levelIndex);
     state.hull=Math.min(state.ship.maxHull,state.hull+7);state.flares=Math.min(state.ship.flareCapacity,state.flares+1);
-    event(state,'rescue',{text:`${state.rescued}/${level.target} home. +${crewBrass(state.watch??state.levelIndex)} brass; hull and flares restored.`,x:b.x,y:b.y});
+    event(state,'rescue',{text:`${b.name} is home. ${state.rescueChain>1?`${state.rescueChain} CREW CHAIN · `:''}+${crewBrass(state.watch??state.levelIndex)} brass`,points:300+chain,x:b.x,y:b.y});
   }
   if(delivered.length)state.tow=state.tow.filter(b=>b.state!=='safe');
-  if(state.rescued>=level.target)settle(state,true);
+  if(state.rescued>=level.target&&signalsReady(state))settle(state,true);
   else if(state.elapsed>=level.seconds||state.hull<=0||state.rescued+state.boats.filter(b=>b.state==='waiting'||b.state==='towing').length<level.target)settle(state,false);
 }

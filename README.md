@@ -1,4 +1,4 @@
-# Lanternwake · Stormwatch
+# Lanternwake · Tidebound
 
 [![make.fun · best-game-01](https://make.fun/badge/best-game-01.svg)](https://make.fun/bounty/best-game-01)
 [![rank](https://make.fun/badge/best-game-01/Snowbow19/lanternwake/rank.svg)](https://make.fun/bounty/best-game-01/leaderboard)
@@ -16,9 +16,11 @@ Bring stranded crews through four storm-lit waters. Read the tides, secure fadin
 
 ## Sail the Northreach
 
-Lantern Harbor teaches the lines. Glass Channel adds reef lanes and directional currents. Murmur Banks hides crews in fog. Dawn Passage combines storms, currents and turning water in the final crossing.
+Lantern Harbor teaches the lines. Glass Channel adds reef lanes and directional currents. Murmur Banks hides crews in polar fog: light its two signal towers to keep passages visible. In Dawn Passage, a creature rises from the deep. Its marked surges give you time to steer clear. Light both towers to drive it back, then bring the last crews home.
 
-Waiting crews have distress clocks. Taking a tow secures their light. Flares buy nearby crews more time, reveal fog and calm hazards. An overstretched line can part; recover the adrift crews before their lights expire. Lose too many crews, your hull or the remaining time, and the attempt ends.
+Waiting crews have distress clocks. Taking a tow secures their light. Flares buy nearby crews more time, reveal fog, calm hazards and repel the creature. Fire one within range of a signal tower to light it. A harbor tender replenishes flares while your ship rests near the docks. Bring several crews home together to earn chain bonuses.
+
+An overstretched line can part; recover the adrift crews before their lights expire. Lose too many crews, your hull or the remaining time, and the attempt ends. Charts with signal towers are complete only when the required crews are home and both towers are burning.
 
 Rescues and supplies earn brass. Buy engines, plating, winches, storm bells and signal lanterns in port, repair hull, or save brass for a later fitting. Prices rise with your ship's fittings. Brass brought ashore after the campaign adds ten points per unit to its final score.
 

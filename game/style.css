@@ -208,3 +208,68 @@ h1{font-size:35px;margin-top:17px;margin-bottom:7px}
 .ship-card:focus-visible,.storm-launch:focus-visible,.camera-toggle:focus-visible{outline:2px solid #e8c57f;outline-offset:3px}
 @media(max-width:900px){.room-screen h2{font-size:30px}.ship-card{padding:6px 4px;grid-template-columns:15px 1fr}.ship-card>strong{font-size:8px}.ship-card>small{font-size:5px}.room-screen .chart-card strong{font-size:12px}.resource-grid strong{font-size:16px}}
 .score-strip{font:6px/1.5 monospace;letter-spacing:.5px;color:#bdcca8;margin-top:5px;min-height:9px}
+
+/* Tidebound helm */
+:root{--ink:#f5edcf;--gold:#f2c47b;--line:#52746b}
+#game-shell{grid-template-columns:190px minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+.chart,.sea{min-height:0}
+.chart{padding:20px 19px 16px;background:linear-gradient(155deg,#183e43,#0d2634);border-right-color:#76958660}
+h1{font-size:36px;margin:22px 0 11px}
+.brand-mark{right:20px;top:54px;font-size:27px}
+.motto{font-size:12px;line-height:1.4;color:#d1d9bc}
+.chart>.eyebrow{font-size:7px;letter-spacing:1px;color:#c3d4c5}
+.mission>.eyebrow{font-size:8px;line-height:1.7;color:#edc88a}
+.mission p{font-size:10px;line-height:1.55;color:#c8ddcd}
+.count{gap:10px;margin-top:10px}
+.count strong{font-size:40px;color:#ffe2a2}
+.count>span{font-size:7px;color:#afcfc1}
+.hull-row{font-size:8px;color:#c1dbce;margin-top:14px}
+.hull-track{height:5px;background:#071c2b;border-radius:4px;overflow:hidden}
+.resource-grid strong{font-size:21px}
+.resource-grid span{font-size:6px;letter-spacing:.5px;color:#adc6b9}
+.score-strip{font:bold 9px/1.6 monospace;letter-spacing:0;color:#f1d39b;margin-top:8px}
+.ship-name{font-size:8px;line-height:1.5;letter-spacing:.3px}
+.ship-upgrades span{font-size:6px;padding:2px 3px;color:#e7d6a3;border-color:#71846b60}
+.controls{gap:5px;font-size:7px;margin-top:12px;color:#bdd1c5;line-height:1.2}
+.controls>div{flex-wrap:wrap;gap:4px}
+footer{left:19px;right:19px;bottom:12px}
+footer button,#sound{font-size:7px;color:#d7dcc2}
+body[data-scene="play"] h1{font-size:25px;line-height:.9;margin:13px 0 11px}
+body[data-scene="play"] .motto,body[data-scene="play"] .brand-mark{display:none}
+body[data-scene="play"] .rule{margin:13px 0}
+body[data-scene="play"] .mission p{font-size:9px;line-height:1.4;margin:6px 0}
+body[data-scene="play"] .count{margin-top:3px}
+body[data-scene="play"] .hull-row{margin-top:10px}
+body[data-scene="play"] .ship-name{margin-top:6px}
+body[data-scene="play"] .count strong{font-size:43px}
+body[data-scene="play"] .controls{position:absolute;bottom:39px;left:19px;right:19px;gap:4px;margin:0}
+body[data-scene="play"] .controls kbd{font-size:6px;padding:2px 3px;min-width:18px}
+.topline{inset:18px 24px auto;z-index:1}
+.location>.eyebrow{font:bold 13px/1.4 monospace;letter-spacing:1.5px;color:#fff0c7;text-shadow:0 2px 8px #102d40}
+.location>#weather{font:italic 14px Georgia,serif;color:#d0e8dc;text-shadow:0 1px 5px #163d4d}
+#objective-line{font:bold 9px/1.6 monospace;letter-spacing:.7px;color:#ffdb9c;margin-top:4px;text-shadow:0 1px 6px #14374b}
+.watch{padding:10px 13px;background:#0a283cb8;border-color:#aac1b44d;box-shadow:0 3px 15px #09273540}
+#clock{font:28px/1 Georgia,serif;color:#ffecbb}
+.watch small{font-size:7px;color:#bed4c7}
+.camera-toggle{left:auto;right:24px;top:90px;font-size:8px;background:#0d2e40d9;color:#e4d5af}
+.voyage-hud{left:24px;right:24px;bottom:16px;font-size:8px;color:#d2e6d6;text-shadow:0 1px 3px #09253b}
+#convoy{color:#ffe2a2;font:bold 10px monospace}
+#toast{top:auto;bottom:54px;max-width:65%;padding:8px 13px;color:#fff0c6;background:#102e40ed;font-size:10px;border-color:#cbbf8d60;box-shadow:0 3px 14px #06233740;z-index:2}
+#action-hint{position:absolute;left:50%;bottom:100px;transform:translateX(-50%);padding:8px 14px;font:bold 10px/1.4 monospace;letter-spacing:.5px;background:#ffe0a0;color:#153a48;border:1px solid #fff0bc;border-radius:4px;box-shadow:0 3px 15px #14374b70;pointer-events:none;opacity:0;transition:opacity .15s;white-space:nowrap}
+#action-hint.visible{opacity:1}
+body:not([data-scene="play"]) #objective-line,body:not([data-scene="play"]) #action-hint{display:none}
+.overlay{background:linear-gradient(90deg,#102d3b00 5%,#102d3b3d 33%,#102b39f2 64%)}
+.screen-content{width:480px;max-width:49%;margin-right:4.5%}
+.room-screen h2{font-size:43px;line-height:1.05}
+.room-screen .screen-copy{font-size:11px;color:#cbdecf}
+.chart-card{background:#24505ac4;border-color:#8eae9660}
+.room-screen .chart-card strong{font-size:15px}
+.chart-card-bottom{color:#bed1be}
+.ship-card{background:#20434ed9;border-color:#82a79770}
+.ship-card>strong{font-size:10px}
+.ship-card>small{color:#b6ccba}
+.launch{background:#f0c682;box-shadow:0 4px 15px #061f3540;color:#173a46}
+.launch:hover{background:#ffe2a5}
+.finished .screen-content h2{font-size:49px}
+.finished .overlay{background:linear-gradient(90deg,#15364a00,#15364a85 39%,#102d3af0 64%)}
+@media(max-width:900px){#game-shell{grid-template-columns:170px minmax(0,1fr)}.chart{padding:16px 13px}.chart>.eyebrow{font-size:6px}.topline{left:16px;right:16px}.location>.eyebrow{font-size:10px}.screen-content{max-width:56%;margin-right:4%}.room-screen h2{font-size:34px}.room-screen .chart-card strong{font-size:12px}#action-hint{font-size:8px}#toast{max-width:85%;font-size:9px}.controls{font-size:7px}.resource-grid span{font-size:5px}footer{left:13px;right:13px}}

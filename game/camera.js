@@ -5,7 +5,7 @@ export function createCamera(){
   let x=W/2,y=H/2,zoom=1,overview=false;
   return{
     update(target,active){
-      const nextZoom=active&&!overview?1.6:1;zoom+=(nextZoom-zoom)*.16;
+      const nextZoom=active&&!overview?1.35:1;zoom+=(nextZoom-zoom)*.16;
       const halfW=W/(2*zoom),halfH=H/(2*zoom),tx=active?target.x:W/2,ty=active?target.y:H/2;
       x=clamp(x+(clamp(tx,halfW,W-halfW)-x)*.12,halfW,W-halfW);y=clamp(y+(clamp(ty,halfH,H-halfH)-y)*.12,halfH,H-halfH);
     },

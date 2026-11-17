@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Lanternwake · Stormwatch</title>
+  <title>Lanternwake · Tidebound</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -25,15 +25,17 @@
     <div class="controls">
       <div><kbd>WASD</kbd><span>or click sea / chart</span></div>
       <div><kbd>SPACE</kbd><span>take a tow</span><kbd>E</kbd><span>flare</span></div>
-      <div><kbd>SHIFT</kbd><span>boost</span><kbd>P</kbd><span>pause</span><kbd>R</kbd><span>retry</span></div>
+      <div><kbd>SHIFT</kbd><span>boost</span><kbd>P</kbd><span>pause</span></div>
+      <div><kbd>R</kbd><span>retry</span><kbd>C</kbd><span>chart view</span></div>
     </div>
     <footer><button id="room-button">CHART ROOM</button><button id="sound" aria-label="Turn sound on">SOUND OFF</button></footer>
   </aside>
   <section class="sea" aria-label="Northreach rescue voyage">
     <canvas id="sea" width="1040" height="480" tabindex="0" aria-label="Steer the tug, take a tow with Space, launch flares with E, and bring stranded boats to the harbor."></canvas>
-    <div class="topline"><div class="location"><span class="eyebrow" id="location">LANTERN HARBOR</span><span id="weather">The first line.</span></div><div class="watch"><span id="clock">02:00</span><small>UNTIL THE STORM</small></div></div>
+    <div class="topline"><div class="location"><span class="eyebrow" id="location">LANTERN HARBOR</span><span id="weather">The first line.</span><span id="objective-line"></span></div><div class="watch"><span id="clock">02:00</span><small>UNTIL THE STORM</small></div></div>
     <button id="camera-toggle" class="camera-toggle">C · CHART VIEW</button>
     <div id="toast" role="status"></div>
+    <div id="action-hint"></div>
     <div class="voyage-hud"><span><i class="legend safe"></i>HARBOR</span><span><i class="legend boat"></i>CREW</span><span id="flare-count">✷ 2 FLARES</span><span id="salvage-count">0 SUPPLIES</span><span id="convoy">0 / 3 IN TOW</span></div>
     <div id="overlay" class="overlay"><div id="screen-content" class="screen-content"></div></div>
     <div id="pause-overlay" class="pause hidden"><span class="eyebrow">ENGINE IDLE</span><h2>The sea can wait.</h2><button id="resume" class="launch">RESUME VOYAGE <span>↗</span></button><button class="text-button" id="pause-room">RETURN TO CHART ROOM</button></div>

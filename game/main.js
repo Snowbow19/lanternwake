@@ -21,7 +21,7 @@ const input=bindInput(canvas,{
   waypoint:p=>{if(screen==='play'){const world=renderer.worldPoint(p);game.tug.target={x:clamp(world.x,30,1010),y:clamp(world.y,78,435)};}},
 });
 function toast(text,seconds=4){$('toast').textContent=text;$('toast').style.opacity='1';toastUntil=clock+seconds;}
-function setScreen(kind){screen=kind;input.clear();$('pause-overlay').classList.add('hidden');$('overlay').classList.remove('hidden');$('toast').style.opacity='0';document.body.classList.toggle('finished',kind!=='room');}
+function setScreen(kind){screen=kind;document.body.dataset.scene=kind;input.clear();$('pause-overlay').classList.add('hidden');$('overlay').classList.remove('hidden');$('toast').style.opacity='0';document.body.classList.toggle('finished',kind!=='room');}
 function recordStorm(){
   if(!run?.endless)return;
   const partial=game.mode==='playing'?voyageScore(game):game.mode==='lost'?game.score:0;
@@ -41,7 +41,7 @@ function launchPractice(index){run=newRun('practice',saved.selectedShip,index);b
 function startStormwatch(){if(saved.campaignBest<=0)return;saved.stormCheckpoint=null;persist();run=newRun('storm',saved.selectedShip);beginVoyage();}
 function continueStormwatch(){if(!saved.stormCheckpoint){startStormwatch();return;}run={practice:false,endless:true,...structuredClone(saved.stormCheckpoint)};beginVoyage();}
 function beginVoyage(){
-  if(!run)return;screen='play';game=createVoyage(run.level,run.ship,{chart:runChart(run),watch:run.endless?run.watch:undefined,hull:run.hull});particles.clear();input.clear();
+  if(!run)return;screen='play';document.body.dataset.scene='play';game=createVoyage(run.level,run.ship,{chart:runChart(run),watch:run.endless?run.watch:undefined,hull:run.hull});particles.clear();input.clear();
   $('overlay').classList.add('hidden');$('pause-overlay').classList.add('hidden');document.body.classList.remove('finished');input.focus();audio.play('start');toast(chartOf(game).briefing,7);updateHud(game,run,renderer,saved);
 }
 function retryVoyage(){if(run?.endless){recordStorm();startStormwatch();}else beginVoyage();}
