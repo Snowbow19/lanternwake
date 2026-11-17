@@ -1,7 +1,10 @@
 import { hazardsAt, distance } from './simulation.js';
+import {createCamera,MINIMAP} from './camera.js';
+import {shipProfile} from './ships.js';
 
 export function createRenderer(canvas) {
   const ctx=canvas.getContext('2d',{alpha:false}),W=1040,H=480,PI=Math.PI,TAU=PI*2;
+  const camera=createCamera(),reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
   let game,level,harbor,rocks,worldTime=0,seed=9987;
   const rand=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
   const seaMarks=Array.from({length:150},()=>({x:rand()*W,y:rand()*H,w:3+rand()*15,a:rand()}));
@@ -62,11 +65,12 @@ function drawStorm(s,index) {
 }
 
 function drawBoat(b,tug=false) {
+  if(!tug&&b.state==='lost'){line([{x:b.x-5,y:b.y-5},{x:b.x+5,y:b.y+5}],'#ba786c');line([{x:b.x+5,y:b.y-5},{x:b.x-5,y:b.y+5}],'#ba786c');return;}
   if(!tug&&level.fog&&!b.discovered&&b.state==='waiting')return;
   const bob=Math.sin(worldTime*2+b.x*.1)*1.1;
-  ctx.save();ctx.translate(b.x,b.y+bob);ctx.rotate(b.angle);
+  ctx.save();ctx.translate(b.x,b.y+bob);ctx.rotate(b.angle);if(tug){const size=game.ship.type==='cutter'?1.13:game.ship.type==='skiff'?.86:1;ctx.scale(size,size);}
   ellipse(-1,5,tug?23:18,tug?10:8,'#02172190');
-  ctx.fillStyle=tug?'#e0bd78':b.state==='safe'?'#90b4a1':'#ad725a';
+  ctx.fillStyle=tug?game.ship.color:b.state==='safe'?'#90b4a1':'#c18565';
   ctx.beginPath();ctx.moveTo(tug?25:19,0);ctx.quadraticCurveTo(6,-13,-18,-9);ctx.lineTo(-21,7);ctx.quadraticCurveTo(7,14,tug?25:19,0);ctx.closePath();ctx.fill();
   ctx.strokeStyle=tug?'#fcdda0':'#e4b58c';ctx.lineWidth=1;ctx.stroke();
   ctx.fillStyle='#20434a';ctx.beginPath();ctx.moveTo(15,0);ctx.lineTo(5,-6);ctx.lineTo(-13,-5);ctx.lineTo(-14,5);ctx.lineTo(5,6);ctx.closePath();ctx.fill();
@@ -77,15 +81,18 @@ function drawBoat(b,tug=false) {
   if(!tug&&b.state==='waiting'){
     glow(b.x+8,b.y,23,'#ed9b4d26');
     const pulse=(worldTime*.4+b.ox*.01)%1;ctx.strokeStyle=`rgba(238,164,104,${(1-pulse)*.5})`;ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(b.x,b.y,20+pulse*20,12+pulse*12,0,0,TAU);ctx.stroke();
-    ctx.font='8px monospace';ctx.textAlign='center';ctx.fillStyle='#e2bf96';ctx.fillText(b.name.toUpperCase(),b.x,b.y-25);ctx.textAlign='left';
+    const urgent=b.distress<35;ctx.font='8px monospace';ctx.textAlign='center';ctx.fillStyle=urgent?'#ffb19b':'#f0d6ac';ctx.fillText(b.name.toUpperCase(),b.x,b.y-32);
+    if(game.mode==='playing'){ctx.font='9px monospace';ctx.fillText(`${Math.floor(b.distress/60).toString().padStart(2,'0')}:${Math.floor(b.distress%60).toString().padStart(2,'0')}`,b.x,b.y-21);ctx.fillStyle='#1e3b42';ctx.fillRect(b.x-18,b.y-16,36,2);ctx.fillStyle=urgent?'#ee9279':'#dfbb7c';ctx.fillRect(b.x-18,b.y-16,36*Math.min(1,b.distress/b.initialDistress),2);}
+    ctx.textAlign='left';
     if(game.mode==='playing'&&distance(b,game.tug)<82){ctx.fillStyle='#e8c07d';ctx.fillRect(b.x-24,b.y+20,48,15);ctx.fillStyle='#173b40';ctx.font='8px monospace';ctx.fillText('SPACE',b.x-15,b.y+31);}
   }
+  if(tug&&game.mode==='playing'){ctx.font='7px monospace';ctx.textAlign='center';ctx.fillStyle='#f7dfaa';ctx.fillText(shipProfile(game.ship.type).name.toUpperCase(),b.x,b.y+40);ctx.textAlign='left';}
 }
 
 function drawWake() {
   if(game.tug.target&&game.mode==='playing'){const p=game.tug.target;ctx.strokeStyle='#d2cc8b99';ctx.setLineDash([2,6]);line([game.tug,p],'#b5d0ad44');ctx.setLineDash([]);ctx.beginPath();ctx.arc(p.x,p.y,8+Math.sin(worldTime*4)*2,0,TAU);ctx.stroke();ctx.beginPath();ctx.arc(p.x,p.y,2,0,TAU);ctx.fillStyle='#e9c886';ctx.fill();}
   let leader=game.tug;
-  for(const b of game.tow){ctx.strokeStyle='#e3c78c';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(leader.x,leader.y);ctx.quadraticCurveTo((leader.x+b.x)/2,(leader.y+b.y)/2+7,b.x,b.y);ctx.stroke();leader=b;}
+  for(const b of game.tow){ctx.strokeStyle=b.strain>0?'#ff9478':'#f0d59b';ctx.lineWidth=b.strain>0?2:1.6;ctx.beginPath();ctx.moveTo(leader.x,leader.y);ctx.quadraticCurveTo((leader.x+b.x)/2,(leader.y+b.y)/2+7,b.x,b.y);ctx.stroke();leader=b;}
 }
 
 function drawCurrents() {
@@ -123,9 +130,23 @@ function drawFog() {
   fogCtx.globalCompositeOperation='source-over';ctx.drawImage(fog,0,0);
   ctx.fillStyle='#96b6b59a';ctx.font='8px monospace';ctx.fillText('MURMUR BANKS · LISTEN FOR THE LANTERNS',28,432);
 }
-return function renderScene(state,chart,clock,particles) {
+function drawMinimap(){
+  const m=MINIMAP;ctx.save();ctx.fillStyle='#071d27ed';ctx.fillRect(m.x-5,m.y-18,m.w+10,m.h+24);ctx.strokeStyle='#7e9b8880';ctx.lineWidth=1;ctx.strokeRect(m.x,m.y,m.w,m.h);
+  ctx.fillStyle='#c2caae';ctx.font='7px monospace';ctx.fillText('CHART · CLICK TO SET COURSE',m.x,m.y-7);
+  const px=x=>m.x+x/W*m.w,py=y=>m.y+y/H*m.h;
+  for(const r of rocks)ellipse(px(r.x),py(r.y),r.r/W*m.w,r.r/H*m.h,'#638577');
+  for(const h of hazardsAt(game))ellipse(px(h.x),py(h.y),h.r/W*m.w,h.r/H*m.h,h.calm?'#4e8c8c':'#6c6d96');
+  for(const b of game.boats)if(b.state==='waiting'&&b.discovered)ellipse(px(b.x),py(b.y),b.distress<35?2.6:1.8,b.distress<35?2.6:1.8,b.distress<35?'#fb9e80':'#e0ae77');
+  ellipse(px(harbor.x),py(harbor.y),3.3,3.3,'#e7d099');
+  let lead=game.tug;for(const b of game.tow){line([{x:px(lead.x),y:py(lead.y)},{x:px(b.x),y:py(b.y)}],'#e1c68d');lead=b;}
+  ellipse(px(game.tug.x),py(game.tug.y),2.7,2.7,'#f4efc1');
+  const view=camera.bounds();ctx.strokeStyle='#d8ddbd80';ctx.lineWidth=.7;ctx.strokeRect(px(view.x),py(view.y),view.w/W*m.w,view.h/H*m.h);ctx.restore();
+}
+function renderScene(state,chart,clock,particles) {
   game=state;level=chart;harbor=chart.harbor;rocks=chart.reefs;worldTime=clock;
-  ctx.save();drawWater();drawCurrents();drawHarbor();rocks.forEach(drawIsland);drawSalvage();
+  camera.update(game.tug,game.mode==='playing');
+  ctx.save();camera.apply(ctx);if(!reducedMotion&&particles.shock)ctx.translate(Math.sin(clock*71)*particles.shock*2,Math.cos(clock*81)*particles.shock*2);
+  drawWater();drawCurrents();drawHarbor();rocks.forEach(drawIsland);drawSalvage();
   particles.draw(ctx);drawWake();game.boats.forEach(b=>drawBoat(b));drawBoat(game.tug,true);
   for(const [i,h] of hazardsAt(game).entries()){
     ctx.save();ctx.globalAlpha=game.mode==='won'?.2:h.calm?.3:1;
@@ -136,5 +157,8 @@ return function renderScene(state,chart,clock,particles) {
   const vignette=ctx.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,W*.63);vignette.addColorStop(0,'transparent');vignette.addColorStop(1,'#02121d60');ctx.fillStyle=vignette;ctx.fillRect(0,0,W,H);
   if(game.mode==='playing'){ctx.strokeStyle='#e6ba7080';ctx.lineWidth=2;ctx.beginPath();ctx.arc(game.tug.x,game.tug.y,29,-PI/2,-PI/2+TAU*game.boost);ctx.stroke();}
   ctx.restore();
-};
+  if(game.mode==='playing')drawMinimap();
+  if(particles.shock){ctx.fillStyle=`rgba(155,58,40,${particles.shock*.12})`;ctx.fillRect(0,0,W,H);}
+}
+return{draw:renderScene,worldPoint:p=>camera.mapPoint(p)||camera.worldPoint(p),toggle:()=>camera.toggle(),isOverview:()=>camera.isOverview()};
 }

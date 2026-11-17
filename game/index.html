@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Lanternwake · The Northreach Charts</title>
+  <title>Lanternwake · Stormwatch</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,9 +18,12 @@
     <div class="count"><strong id="rescued">00</strong><span>/ <b id="goal-count">03</b><br>BOATS HOME</span></div>
     <div class="hull-row"><span>HULL</span><span id="hull-label">100%</span></div>
     <div class="hull-track"><div id="hull-fill"></div></div>
+    <div class="resource-grid"><div><strong id="brass-value">0</strong><span>BRASS</span></div><div><strong id="strain-value">0%</strong><span>LINE STRAIN</span></div><div><strong id="lost-value">0</strong><span>LIGHTS LOST</span></div></div>
+    <div id="score-strip" class="score-strip">VOYAGE SCORE 0</div>
+    <div id="ship-name" class="ship-name">Northreach Tug</div>
     <div class="ship-upgrades" id="ship-upgrades" aria-label="Ship upgrades"></div>
     <div class="controls">
-      <div><kbd>WASD</kbd><span>or click to steer</span></div>
+      <div><kbd>WASD</kbd><span>or click sea / chart</span></div>
       <div><kbd>SPACE</kbd><span>take a tow</span><kbd>E</kbd><span>flare</span></div>
       <div><kbd>SHIFT</kbd><span>boost</span><kbd>P</kbd><span>pause</span><kbd>R</kbd><span>retry</span></div>
     </div>
@@ -29,6 +32,7 @@
   <section class="sea" aria-label="Northreach rescue voyage">
     <canvas id="sea" width="1040" height="480" tabindex="0" aria-label="Steer the tug, take a tow with Space, launch flares with E, and bring stranded boats to the harbor."></canvas>
     <div class="topline"><div class="location"><span class="eyebrow" id="location">LANTERN HARBOR</span><span id="weather">The first line.</span></div><div class="watch"><span id="clock">02:00</span><small>UNTIL THE STORM</small></div></div>
+    <button id="camera-toggle" class="camera-toggle">C · CHART VIEW</button>
     <div id="toast" role="status"></div>
     <div class="voyage-hud"><span><i class="legend safe"></i>HARBOR</span><span><i class="legend boat"></i>CREW</span><span id="flare-count">✷ 2 FLARES</span><span id="salvage-count">0 SUPPLIES</span><span id="convoy">0 / 3 IN TOW</span></div>
     <div id="overlay" class="overlay"><div id="screen-content" class="screen-content"></div></div>

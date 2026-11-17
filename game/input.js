@@ -5,7 +5,7 @@ export function bindInput(canvas,callbacks) {
     if(e.target instanceof HTMLButtonElement&&(e.key===' '||e.key==='Enter'))return;
     const key=e.key.toLowerCase();
     if([' ','arrowup','arrowdown','arrowleft','arrowright','shift'].includes(key))e.preventDefault();
-    if(!e.repeat){if(key===' ')callbacks.tow();if(key==='e')callbacks.flare();if(key==='p'||key==='escape')callbacks.pause();if(key==='r')callbacks.retry();}
+    if(!e.repeat){if(key===' ')callbacks.tow();if(key==='e')callbacks.flare();if(key==='p'||key==='escape')callbacks.pause();if(key==='r')callbacks.retry();if(key==='c')callbacks.camera?.();}
     held.add(key);
   });
   window.addEventListener('keyup',e=>held.delete(e.key.toLowerCase()));
