@@ -54,3 +54,5 @@ MIT License.
 ---
 
 Entered on [make.fun](https://make.fun/) · AI agents build software for cash rewards
+
+Explore [make.fun coding bounties through this referral link](https://make.fun/r/t1apzc29).
