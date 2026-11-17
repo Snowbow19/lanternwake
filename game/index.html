@@ -3,35 +3,38 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Lanternwake — Bring them home.</title>
+  <title>Lanternwake · The Northreach Charts</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main id="game-shell">
-    <aside class="chart">
-      <div class="eyebrow"><span class="signal-dot"></span> NORTH REACH · 1887</div>
-      <div class="brand-mark" aria-hidden="true">✷</div>
-      <h1>Lantern<br>wake<span>.</span></h1>
-      <p class="motto">A little light.<br>A long way home.</p>
-      <div class="rule"></div>
-      <div class="mission"><span class="eyebrow">THE NIGHT'S WORK</span><p>Bring five stranded boats<br>back to Lantern Harbor.</p></div>
-      <div class="count"><strong id="rescued">00</strong><span>/ 05<br>BOATS HOME</span></div>
-      <div class="hull-row"><span>HULL</span><span id="hull-label">100%</span></div>
-      <div class="hull-track"><div id="hull-fill"></div></div>
-      <div class="controls"><div><kbd>WASD</kbd><span>or click to steer</span></div><div><kbd>SPACE</kbd><span>take a tow · up to 3</span></div><div><kbd>SHIFT</kbd><span>engine boost</span></div><div><kbd>P</kbd><span>pause</span><kbd>R</kbd><span>restart</span></div></div>
-      <footer><span>KEEP THE LIGHT ALIVE</span><button id="sound" aria-label="Turn sound on">SOUND OFF</button></footer>
-    </aside>
-    <section class="sea" aria-label="Lantern Harbor rescue game">
-      <canvas id="sea" width="1040" height="480" tabindex="0" aria-label="Navigate your tug, attach stranded boats with Space, and tow five into the glowing harbor. Avoid rocks and storm cells."></canvas>
-      <div class="topline"><div class="location"><span class="eyebrow">LANTERN HARBOR</span><span id="weather">A storm is coming.</span></div><div class="watch"><span id="clock">03:00</span><small>UNTIL THE STORM</small></div></div>
-      <div id="toast" role="status">The harbor is waiting.</div>
-      <div class="voyage-hud"><span><i class="legend safe"></i>HARBOR</span><span><i class="legend boat"></i>STRANDED BOAT</span><span><i class="legend storm"></i>STORM CELL</span><span id="convoy">0 / 3 IN TOW</span></div>
-      <div id="overlay" class="overlay">
-        <div class="intro"><div class="eyebrow" id="overline">ONE BOAT CAN CHANGE THE NIGHT.</div><h2 id="headline">Bring them<br><em>home.</em></h2><p id="message">The tide is turning. Crews are waiting for a light.<br>Take their lines. Find the harbor. Beat the storm.</p><button class="launch" id="launch">LIGHT THE ENGINE <span>↗</span></button><div class="start-note" id="start-note">CLICK TO SET A COURSE · SPACE TO TAKE A TOW</div></div>
-      </div>
-      <div id="pause-overlay" class="pause hidden"><span class="eyebrow">ENGINE IDLE</span><h2>The sea can wait.</h2><button id="resume" class="launch">RESUME VOYAGE <span>↗</span></button></div>
-    </section>
-  </main>
-  <script type="module" src="main.js"></script>
+<main id="game-shell">
+  <aside class="chart">
+    <div class="eyebrow"><span class="signal-dot"></span> NORTH REACH · 1887</div>
+    <span class="brand-mark" aria-hidden="true">✷</span>
+    <h1>Lantern<br>wake<span>.</span></h1>
+    <p class="motto">A little light.<br>A long way home.</p>
+    <div class="rule"></div>
+    <div class="mission"><span class="eyebrow" id="voyage-label">FOUR WATERS. ONE LAST LIGHT.</span><p id="mission-copy">Chart a course through the Northreach.<br>Bring every harbor its dawn.</p></div>
+    <div class="count"><strong id="rescued">00</strong><span>/ <b id="goal-count">03</b><br>BOATS HOME</span></div>
+    <div class="hull-row"><span>HULL</span><span id="hull-label">100%</span></div>
+    <div class="hull-track"><div id="hull-fill"></div></div>
+    <div class="ship-upgrades" id="ship-upgrades" aria-label="Ship upgrades"></div>
+    <div class="controls">
+      <div><kbd>WASD</kbd><span>or click to steer</span></div>
+      <div><kbd>SPACE</kbd><span>take a tow</span><kbd>E</kbd><span>flare</span></div>
+      <div><kbd>SHIFT</kbd><span>boost</span><kbd>P</kbd><span>pause</span><kbd>R</kbd><span>retry</span></div>
+    </div>
+    <footer><button id="room-button">CHART ROOM</button><button id="sound" aria-label="Turn sound on">SOUND OFF</button></footer>
+  </aside>
+  <section class="sea" aria-label="Northreach rescue voyage">
+    <canvas id="sea" width="1040" height="480" tabindex="0" aria-label="Steer the tug, take a tow with Space, launch flares with E, and bring stranded boats to the harbor."></canvas>
+    <div class="topline"><div class="location"><span class="eyebrow" id="location">LANTERN HARBOR</span><span id="weather">The first line.</span></div><div class="watch"><span id="clock">02:00</span><small>UNTIL THE STORM</small></div></div>
+    <div id="toast" role="status"></div>
+    <div class="voyage-hud"><span><i class="legend safe"></i>HARBOR</span><span><i class="legend boat"></i>CREW</span><span id="flare-count">✷ 2 FLARES</span><span id="salvage-count">0 SUPPLIES</span><span id="convoy">0 / 3 IN TOW</span></div>
+    <div id="overlay" class="overlay"><div id="screen-content" class="screen-content"></div></div>
+    <div id="pause-overlay" class="pause hidden"><span class="eyebrow">ENGINE IDLE</span><h2>The sea can wait.</h2><button id="resume" class="launch">RESUME VOYAGE <span>↗</span></button><button class="text-button" id="pause-room">RETURN TO CHART ROOM</button></div>
+  </section>
+</main>
+<script type="module" src="main.js"></script>
 </body>
 </html>
