@@ -241,6 +241,10 @@ body[data-scene="play"] .mission p{font-size:9px;line-height:1.4;margin:6px 0}
 body[data-scene="play"] .count{margin-top:3px}
 body[data-scene="play"] .hull-row{margin-top:10px}
 body[data-scene="play"] .ship-name{margin-top:6px}
+body[data-scene="play"] .ship-upgrades{display:none}
+body:not([data-scene="play"]) .controls{display:none}
+body.finished h1{font-size:25px;line-height:.9;margin:13px 0 11px}
+body.finished .motto,body.finished .brand-mark{display:none}
 body[data-scene="play"] .count strong{font-size:43px}
 body[data-scene="play"] .controls{position:absolute;bottom:39px;left:19px;right:19px;gap:4px;margin:0}
 body[data-scene="play"] .controls kbd{font-size:6px;padding:2px 3px;min-width:18px}

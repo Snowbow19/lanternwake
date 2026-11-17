@@ -66,6 +66,7 @@ export function tickVoyage(state,input,dt) {
   state.elapsed+=dt;state.damageCooldown=Math.max(0,state.damageCooldown-dt);
   if(state.flare&&state.flare.until<=state.elapsed)state.flare=null;
   tickEncounter(state,dt);
+  if(state.hull<=0){settle(state,false);return;}
   let mx=(input.right?1:0)-(input.left?1:0),my=(input.down?1:0)-(input.up?1:0),arrival=1;
   if(mx||my)tug.target=null;
   else if(tug.target){const d=distance(tug,tug.target);arrival=clamp(d/55,0,1);if(d>1){mx=(tug.target.x-tug.x)/d;my=(tug.target.y-tug.y)/d;}else arrival=0;}
@@ -85,6 +86,7 @@ export function tickVoyage(state,input,dt) {
     }
     if(d<h.r&&!h.calm){state.hull=Math.max(0,state.hull-dt*(h.kind==='whirlpool'?10:7)*(1-state.ship.armor)*(level.damageScale||1));}
   }
+  if(state.hull<=0){settle(state,false);return;}
   const blend=1-Math.exp(-dt*5);
   tug.vx+=(mx*speed+current.x-tug.vx)*blend;tug.vy+=(my*speed+current.y-tug.vy)*blend;
   tug.x=clamp(tug.x+tug.vx*dt,30,WIDTH-30);tug.y=clamp(tug.y+tug.vy*dt,78,HEIGHT-45);
@@ -99,6 +101,7 @@ export function tickVoyage(state,input,dt) {
     if(d<limit){const nx=(tug.x-rock.x)/(d||1),ny=(tug.y-rock.y)/(d||1);tug.x=rock.x+nx*limit;tug.y=rock.y+ny*limit;tug.vx*=.35;tug.vy*=.35;
       if(state.damageCooldown===0){state.hull=Math.max(0,state.hull-17);state.damageCooldown=1.1;event(state,'damage',{text:'Reef strike. Find open water.',x:tug.x,y:tug.y});}}
   }
+  if(state.hull<=0){settle(state,false);return;}
   for(const item of state.salvage)if(!item.taken&&distance(item,tug)<24){item.taken=true;state.salvaged++;state.boost=1;state.brassEarned+=salvageBrass;event(state,'salvage',{text:`Supplies aboard. Boost restored. +${salvageBrass} brass`,x:item.x,y:item.y});}
   state.wakeTick+=dt;
   if(state.wakeTick>1/18&&velocity>20){state.wakeTick=0;event(state,'wake',{x:tug.x-Math.cos(tug.angle)*15,y:tug.y-Math.sin(tug.angle)*15,angle:tug.angle,size:boosting?1.7:1});}

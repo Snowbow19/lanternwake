@@ -5,7 +5,7 @@ import {shipProfile} from './ships.js';
 export function updateHud(game,run,renderer,saved={}){
   const level=chartOf(game),hull=Math.ceil(game.hull),playing=game.mode==='playing';
   text('location',`${level.number} · ${level.name.toUpperCase()}`);text('weather',game.mode==='won'?'The harbor light is safe.':level.subtitle);
-  text('voyage-label',run?run.endless?`STORMWATCH · WATCH ${run.watch+1}`:`${run.practice?'CHART PRACTICE':'NORTHREACH VOYAGE'} · ${level.number} / IV`:'FOUR WATERS. ONE LAST LIGHT.');
+  text('voyage-label',run?run.endless?`STORMWATCH · WATCH ${run.watch+1}`:`${run.practice?'PRACTICE':'VOYAGE'} · CHART ${level.number} / IV`:'FOUR WATERS. ONE LAST LIGHT.');
   const lit=game.beacons.filter(b=>b.lit).length;
   text('mission-copy',game.monster?'Dodge the surges. Light both towers. Bring the last crews home.':`Bring ${level.target} stranded crews home.\n${game.beacons.length?'Light the signal towers with E.':'Take their lines. Follow the harbor light.'}`);
   text('objective-line',game.beacons.length?`${game.rescued} / ${level.target} CREWS HOME   ·   ${lit} / ${game.beacons.length} SIGNALS LIT`:`${game.rescued} / ${level.target} CREWS HOME   ·   ${game.tow.length} IN TOW`);

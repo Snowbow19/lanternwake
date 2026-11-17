@@ -39,7 +39,8 @@ export function tickEncounter(s,dt){
   for(const a of m.strikes){
     if(!a.hit&&s.elapsed>=a.at){
       a.hit=true;emit(s,'surge',{x:a.x,y:a.y});
-      if(gap(a,s.tug)<a.r+13&&s.damageCooldown<=0){
+      const hit=Math.hypot((a.x-s.tug.x)/(a.r+13),(a.y-s.tug.y)/(a.r*.72+10))<1;
+      if(hit&&s.damageCooldown<=0){
         s.hull=Math.max(0,s.hull-23*(1-s.ship.armor));s.damageCooldown=1.1;
         emit(s,'damage',{x:s.tug.x,y:s.tug.y,text:'The deep struck your hull. Move before the next surge.'});
       }
