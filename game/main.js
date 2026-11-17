@@ -27,7 +27,7 @@ function reset() {
   $('overlay').classList.remove('hidden');$('pause-overlay').classList.add('hidden');
   $('overline').textContent='ONE BOAT CAN CHANGE THE NIGHT.';
   $('headline').innerHTML='Bring them<br><em>home.</em>';
-  $('message').innerHTML='The tide is turning. Five crews are waiting for a light.<br>Take their lines. Find the harbor. Beat the storm.';
+  $('message').innerHTML='The tide is turning. Crews are waiting for a light.<br>Take their lines. Find the harbor. Beat the storm.';
   $('launch').innerHTML='LIGHT THE ENGINE <span>↗</span>';
   $('start-note').textContent='CLICK TO SET A COURSE · SPACE TO TAKE A TOW';
   $('weather').textContent='A storm is coming.';
@@ -76,7 +76,7 @@ function finish(won) {
   document.body.classList.add('finished');$('overlay').classList.remove('hidden');$('pause-overlay').classList.add('hidden');
   $('overline').textContent=won?'THE LIGHT HELD. THE CREWS ARE HOME.':'A LIGHT STILL WAITS IN THE HARBOR.';
   $('headline').innerHTML=won?'You brought<br><em>the dawn.</em>':'The sea<br><em>took its toll.</em>';
-  $('message').innerHTML=`${game.rescued} boats home · ${Math.round(game.hull)}% hull · convoy record ${game.maxConvoy}<br>Voyage score <strong>${game.score.toLocaleString('en-US')}</strong>`;
+  $('message').innerHTML=`${game.rescued} boats home · ${Math.ceil(game.hull)}% hull · convoy record ${game.maxConvoy}<br>Voyage score <strong>${game.score.toLocaleString('en-US')}</strong>`;
   $('launch').innerHTML='SAIL AGAIN <span>↗</span>';
   $('start-note').textContent=won?'ANOTHER NIGHT. ANOTHER CHANCE TO BRING THEM HOME.':'SHORTER LINES. SAFER WATER. ONE MORE VOYAGE.';
   $('weather').textContent=won?'The first light of morning.':'The storm has reached the coast.';
@@ -103,18 +103,19 @@ function update(dt) {
   cameraShake=Math.max(0,cameraShake-dt*12);
   if(game.mode!=='playing'||game.paused)return;
   game.elapsed+=dt;game.damageCooldown=Math.max(0,game.damageCooldown-dt);
-  const tug=game.tug;let mx=0,my=0;
+  const tug=game.tug;let mx=0,my=0,arrival=1;
   if(keys.has('w')||keys.has('arrowup'))my--;
   if(keys.has('s')||keys.has('arrowdown'))my++;
   if(keys.has('a')||keys.has('arrowleft'))mx--;
   if(keys.has('d')||keys.has('arrowright'))mx++;
   if(mx||my)tug.target=null;
-  else if(tug.target){const d=distance(tug,tug.target);if(d>6){mx=(tug.target.x-tug.x)/d;my=(tug.target.y-tug.y)/d;}else tug.target=null;}
+  else if(tug.target){const d=distance(tug,tug.target);arrival=clamp(d/55,0,1);if(d>1){mx=(tug.target.x-tug.x)/d;my=(tug.target.y-tug.y)/d;}else arrival=0;}
   const magnitude=Math.hypot(mx,my);if(magnitude){mx/=magnitude;my/=magnitude;}
   const boosting=keys.has('shift')&&game.boost>.015&&magnitude>0;
   game.boost=clamp(game.boost+(boosting?-.32:.14)*dt,0,1);
-  const speed=(boosting?235:155)*(1-game.tow.length*.11);
-  const current={x:Math.sin(tug.y*.013+game.elapsed*.2)*12,y:Math.cos(tug.x*.01+game.elapsed*.16)*7};
+  const speed=(boosting?235:155)*(1-game.tow.length*.11)*arrival;
+  const drift=tug.target?arrival:1;
+  const current={x:Math.sin(tug.y*.013+game.elapsed*.2)*12*drift,y:Math.cos(tug.x*.01+game.elapsed*.16)*7*drift};
   const blend=1-Math.exp(-dt*5);
   tug.vx+=(mx*speed+current.x-tug.vx)*blend;tug.vy+=(my*speed+current.y-tug.vy)*blend;
   tug.x=clamp(tug.x+tug.vx*dt,30,W-30);tug.y=clamp(tug.y+tug.vy*dt,80,H-45);
@@ -240,7 +241,9 @@ function render() {
   drawWater();drawHarbor();
   rocks.forEach(drawIsland);
   drawWake();game.boats.forEach(b=>drawBoat(b));drawBoat(game.tug,true);
+  ctx.save();if(game.mode==='won')ctx.globalAlpha=.25;
   for(let i=0;i<2;i++)drawStorm(stormPosition(i),i);
+  ctx.restore();
   for(const s of sparks)ellipse(s.x,s.y,1.6,1.6,`rgba(246,210,130,${Math.min(1,s.life)})`);
   const vignette=ctx.createRadialGradient(W/2,H/2,H*.2,W/2,H/2,W*.63);vignette.addColorStop(0,'transparent');vignette.addColorStop(1,'#02121d80');ctx.fillStyle=vignette;ctx.fillRect(0,0,W,H);
   if(game.mode==='playing'){ctx.strokeStyle='#e6ba7060';ctx.lineWidth=2;ctx.beginPath();ctx.arc(game.tug.x,game.tug.y,29,-PI/2,-PI/2+TAU*game.boost);ctx.stroke();}
